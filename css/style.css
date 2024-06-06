@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ms+Madi&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    
+    /* border: 3px solid bisque;*/
+} 
+html {
+    scroll-behavior: smooth;
+}
+
+/* || VARIABLES */
+:root {
+    /* FONT */
+    --FF: 'Kanit', sans-serif;
+    --FS: 12px;
+    --FS-XL: 3rem;
+  
+    /* COLOR */
+    --BGCOLOR: #FEFBF6;
+    --ALT-BGCOLOR: #1E293B;
+    --RADIAL-COLOR: whitesmoke;
+    --PALE-BROWN: #f1cda3;
+    --FONT-COLOR: #AD5336;
+    --LIGHT-YELLOW: #fff4a4;
+    --LIGHTER-YELLOW: #ffffe3;
+    --CLAY-ORANGE: #d79682;
+    --COMPLEMENTARY-FONT-COLOR: #0c477d;
+  
+    /* SQUARE */
+    --SQUARE-BGCOLOR: #dcc0e1;
+    --SQUARE-SIZE: 150px;
+  
+    /* GENERAL */
+    --PADDING: 0.5rem;
+    --SHADOWS: 0 0 16px var(--PALE-BROWN);
+    --BORDERS: 2px solid var(--PALE-BROWN);
+    --MARGIN-BODY: 35px;
+}
+  
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-image: url('https://static.vecteezy.com/system/resources/previews/009/590/863/original/sparkle-star-gold-glitter-free-png.png'),
+        linear-gradient(#23072f,orange,#23072f,#493e6e);
+    }
+    }
+
+body, html {
+    font-family: var(--FF);
+    font-size: var(--FS);
+    line-height: 1.6;
+    margin: var(--MARGIN-BODY) 0px var(--MARGIN-BODY) var(--MARGIN-BODY);
+    background-color: #F6F4F2;
+    color: var(--FONT-COLOR);
+}
+
+svg text {
+    font-family: var(--FF);
+    fill: var(--FONT-COLOR);
+}
+
+.y-tick-labels, .y-axis {
+    font-family: var(--FF);
+    font-size: 13px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.chart-title {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+button {
+    font-family: var(--FF);
+    background-color: #EABE6C;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border-color: #EABE6C;
+    color: #891652;
+    box-shadow: none;
+    margin-right: 5px;
+}
+
+svg {
+    background-color: var(--BGCOLOR);
+    border: solid 2px var(--BGCOLOR);
+    border-radius: 15px;
+    box-shadow: 15px 15px 25px #eae1d493;
+    margin-bottom: 55px;
+    margin-right: 55px;
+}
+
+.subplot-title {
+    font-size: 20px;
+    fill: var(--COMPLEMENTARY-FONT-COLOR);
+}
