@@ -76,6 +76,30 @@ svg text {
     font-weight: bold;
 }
 
+.heading-1 {
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--ALT-BGCOLOR);
+}
+
+.heading-2 {
+    font-size: 30px;
+    /* font-weight: bold; */
+    color: var(--ALT-BGCOLOR);
+}
+
+.heading-3 {
+    font-size: 30px;
+    color: var(--ALT-BGCOLOR);
+}
+
+.text-container {
+    font-size: 18px;
+    color: var(--ALT-BGCOLOR);
+    line-height: 1.6;
+    margin-bottom: 55px;
+}
+
 button {
     font-family: var(--FF);
     background-color: #EABE6C;
@@ -85,6 +109,7 @@ button {
     color: #891652;
     box-shadow: none;
     margin-right: 5px;
+    margin-bottom: 55px;
 }
 
 svg {
