@@ -125,3 +125,22 @@ svg {
     font-size: 20px;
     fill: var(--COMPLEMENTARY-FONT-COLOR);
 }
+
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f7f9; /* Updated background color for header */
+    color: #0b5394; /* Updated text color for header */
+}
+
+

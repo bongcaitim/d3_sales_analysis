@@ -2196,6 +2196,48 @@ function createScatterPlot(xColumn, yColumn) {
       });
   });
 }
+////////////////////////////////////////////////////////////////
+function createTable(data) {
+  var container = d3
+    .select("body")
+    .append("div")
+    .attr("class", "text-container")
+    .style("width", "1200px")
+    .style("padding", "10px");
+
+  var table = container.append("table").attr("border", "1");
+
+  // Append table header
+  var thead = table.append("thead");
+  var headerRow = thead.append("tr");
+  headerRow.append("th").text("Diễn giải");
+  headerRow.append("th").text("Dự đoán nguyên do");
+  headerRow.append("th").text("Đánh giá & Đề xuất");
+
+  // Append table body and rows
+  var tbody = table.append("tbody");
+
+  // Function to join array elements into paragraphs
+  function formatText(textArray) {
+    return textArray
+      .map(function (sentence) {
+        return `<p>${sentence}</p><br>`; // Wrap each sentence in a <p> tag
+      })
+      .join("");
+  }
+
+  data.forEach((d) => {
+    var row = tbody.append("tr");
+    // Ensure DienGiai, DuDoan, and DanhGia are always arrays
+    var dienGiai = Array.isArray(d.DienGiai) ? d.DienGiai : [d.DienGiai];
+    var duDoan = Array.isArray(d.DuDoan) ? d.DuDoan : [d.DuDoan];
+    var danhGia = Array.isArray(d.DanhGia) ? d.DanhGia : [d.DanhGia];
+
+    row.append("td").html(formatText(dienGiai));
+    row.append("td").html(formatText(duDoan));
+    row.append("td").html(formatText(danhGia));
+  });
+}
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -2433,6 +2475,31 @@ violinChart("violinPlot1");
 
 d3.select("body").append("br");
 
+d3
+  .select("body")
+  .append("div")
+  .attr("class", "text-container")
+  .style("width", "1200px")
+  .style("padding", "10px").html(`
+      <p><strong>Diễn giải</strong></p>
+        <p>Doanh nghiệp này đang hướng đến các phân khúc khách hàng có thu nhập và khả năng chi tiêu cao, thể hiện qua giá trị đơn hàng trung bình cao.</p>
+        <p>Nhóm A1 (Huấn luyện viên, giáo viên yoga) có giá trị đơn hàng trung bình cao nhất, lên tới 962,751 đồng.</p>
+        <p>Các nhóm khách hàng khác như A2, A3, B1, C1 cũng có giá trị đơn hàng tương đối cao, từ 400,000 đến 800,000 đồng.</p>
+
+      <br>
+      <p><strong>Dự đoán nguyên do</strong></p>
+        <pMua nhiều sản phẩm trên đơn (đã chứng minh ở trên) làm cho giá trị mỗi đơn hàng cao.</p>
+        <p>Các phân khúc khách hàng này có thu nhập ổn định, quan tâm đến sức khỏe và đời sống chất lượng.</p>
+        <p>Họ sẵn sàng chi trả nhiều hơn cho các sản phẩm, dịch vụ phục vụ nhu cầu của bản thân và gia đình.</p>
+        <p>Doanh nghiệp có thể đang tập trung tiếp thị, định vị sản phẩm phù hợp với phân khúc khách hàng này.</p>
+
+      <br>  
+      <p><strong>Đánh giá & Đề xuất</strong></p>
+        <p>Doanh nghiệp đang đúng hướng khi hướng đến các phân khúc khách hàng có thu nhập cao, khả năng chi tiêu mạnh.</p>
+        <p>Đối với những người chi tiêu mạnh tay, họ quan tâm đến chất lượng sản phẩm, sự khác biệt, độc đáo và tính cá nhân hóa trong sản phẩm → doanh nghiệp có thể phát triển sản phẩm theo PK chất lượng cao trong tương lai.</p>
+        <p>Có thể gợi ý bán chéo mà không lo ngại về khả năng tài chính của khách hàng, nên tập trung vào phát triển chiến lược bán chéo hiệu quả, bán chéo với các sản phẩm mang lại biên lợi cao.</p>
+      `);
+
 d3.select("body")
   .append("text")
   .attr("class", "heading-2")
@@ -2450,6 +2517,44 @@ d3.select("body")
 
 timeBarGrid();
 
+var timeInsight = [
+  {
+    DienGiai: "Số đơn càng về cuối tuần càng nhiều.",
+    DuDoan: [
+      "Thứ 7, CN có thời gian rảnh mua sắm.",
+      "Tuy nhiên mức chênh lệch không lớn so với những ngày khác do mua sắm online thuận tiện, ngày nào cũng có thể mua.",
+    ],
+    DanhGia: [
+      "Nếu có triển khai chương trình khuyến mãi gì, có thể làm vào T7, CN.",
+      "Tối ưu hóa quảng cáo bằng cách cho chạy vào những ngày cuối tuần.",
+      "Có thể nới rộng thêm thời gian mở cửa vào các ngày này.",
+      "Assign thêm nhân viên vào các ngày này (part time).",
+      "Nhưng chính vì không chênh lệch nhiều về SL đơn hàng, có thể không cần có ưu tiên lớn, ví dụ như chỉ mở thêm 30p - 1 tiếng thời gian mở cửa hoặc assign thêm 1-2 part time vào những ngày này.",
+    ],
+  },
+  {
+    DienGiai: "Số đơn cao vào 21 giờ, 22 giờ, 20 giờ, 12 giờ, 18 giờ, 15 giờ.",
+    DuDoan: "Các khung giờ nghỉ trưa, tan tầm, ăn tối nghỉ ngơi.",
+    DanhGia: [
+      "Chạy quảng cáo vào những giờ cao điểm, 6 khung giờ nên chạy quảng cáo: 21 giờ, 22 giờ, 20 giờ, 12 giờ, 18 giờ, 15 giờ.",
+      "Assign đủ nhân viên vào những giờ cao điểm.",
+    ],
+  },
+  {
+    DienGiai: [
+      "Đàu tháng có nhỉnh nhẹ về số lượng đơn hàng, có thể do đa số mọi người mới nhận lương. Giảm nhẹ về cuối tháng. Ngày 31 thấp vì không phải tháng nào cũng có ngày 31.",
+      "Tuy nhiên chênh lệch về số đơn giữa các ngày không nhiều.",
+    ],
+    DuDoan: "Do việc nhận lương ảnh hưởng đến hành vi mua hàng.",
+    DanhGia: [
+      "Có thể giúp doanh nghiệp lên kế hoạch nhập hàng phù hợp, tránh nhập thiếu hoặc tồn kho dư thừa.",
+      "Tuy nhiên, vì không chênh lệch số lượng đơn hàng mỗi ngày lớn, thế nên chưa thất thiết phải phân nhiều nhân viên hơn vào những ngày đầu tháng.",
+      "Chạy quảng cáo vào các ngày đầu tháng.",
+    ],
+  },
+];
+createTable(timeInsight);
+
 d3.select("body")
   .append("text")
   .attr("class", "heading-1")
@@ -2463,11 +2568,123 @@ d3.select("body")
     "Phân tích chiến lược hàng hóa thông qua doanh thu - đơn giá - số lượng bán - lợi nhuận"
   )
   .append("br");
+d3
+  .select("body")
+  .append("div")
+  .attr("class", "text-container")
+  .style("width", "1200px")
+  .style("padding", "10px").html(`
+      `);
 
 createScatterPlot("Rank tiền lời", "Rank mức SL bán");
 createScatterPlot("Rank tổng lợi nhuận", "Rank mức SL bán");
 createScatterPlot("Rank mức rẻ", "Rank mức doanh thu");
 createParallelPlot("Rank TL lời", "Rank tổng lợi nhuận", "Rank mức doanh thu");
+var data = [
+  {
+    Ten: "Granola",
+    DienGiai: [
+      "Đơn giá 150k, rank 17/32 về rẻ.",
+      "Biên lời thấp, 10%, hạng 23/32 về biên lời.",
+      "Số tiền lời kiếm được cho mỗi sản phẩm cũng không cao, đứng hạng 25/30.",
+      "Đứng nhất về doanh thu, số lượng bán ra và tổng lợi nhuận.",
+      "Granola là nhóm hàng có doanh thu lớn nhất và nổi bật nhất.",
+      "Đơn giá của Granola là tương đối thấp so với những mặt hàng khác (đứng hạng 17 trong số 32 sản phẩm về đơn giá), nhưng chính vì số lượng bán ra cao dẫn đầu, nên mang về doanh thu lớn.",
+      "Về mặt tỉ lệ lợi nhuận, granola cũng không cao (rank 23/32). Tuy nhiên, tổng lợi nhuận mang về lại lớn nhất, là nhờ số lượng bán ra là lớn nhất.",
+    ],
+    DuDoan: [""],
+    DanhGia: [""],
+  },
+  {
+    Ten: "Bánh Biscotti",
+    DienGiai: [
+      "Đơn giá 130k (rank 13 về rẻ, cũng ngang với granola là 17).",
+      "Tỉ lệ lợi nhuận cao, 19%, rank 12.",
+      "Rank doanh thu và tổng số lượng bán được là 6/32, khá cao so với những sản phẩm khác. Với số lượng bán đó cũng được xem là bán khá chạy.",
+      "Rank lợi nhuận đứng hạng 2.",
+      "Rank số tiền lời kiếm được khi bán 1 sản phẩm là hạng 8 (khá cao).",
+    ],
+    DuDoan: [
+      "Có thể là món ăn vặt đắt tiền, phục vụ phân khúc khách hàng có thu nhập cao, sẵn sàng chi trả nhiều hơn cho chất lượng.",
+      "Là sản phẩm đặc biệt, không phải nhu cầu hằng ngày nên số lượng bán ra không quá cao.",
+    ],
+    DanhGia: [
+      "Đây là mặt hàng không bán được chạy nhất nhưng lại mang lại lượng lợi nhuận cao. Không chỉ có tỉ lệ lợi nhuận cao, mà mà lượng lợi nhuận trên mỗi sản phẩm cũng cao. Sản phẩm cũng khá dễ bán.",
+      "Nên tận dụng để bán chéo, recommend cho khách mua để tăng lợi nhuận về cho doanh nghiệp.",
+    ],
+  },
+  {
+    Ten: "Bún gạo lứt",
+    DienGiai: [
+      "Đơn giá 50k, đứng thứ 3 về độ rẻ.",
+      "Tỉ lệ lợi nhuận lại rất cao, đứng nhất, với 34% lợi.",
+      "Tuy nhiên vì đơn giá thấp nên số tiền lời trên mỗi sản phẩm lại không cao.",
+      "Bán được số lượng lớn, rank 3 về số lượng bán được.",
+      "Doanh thu không cao (rank 20) do bán được số lượng nhiều nhưng đơn giá thấp.",
+      "Bù lại, mức tổng lợi nhuận đem về lại cao, đứng rank 3.",
+    ],
+    DuDoan: [
+      "Món ăn cơ bản, tiêu thụ đại trà nên giá rẻ để phù hợp với nhiều đối tượng khách hàng.",
+      "Sản phẩm thiết yếu, nhu cầu cao.",
+    ],
+    DanhGia: [
+      "Đây là mặt hàng giá rẻ, dễ bán, và tỉ lệ biên lợi cao. Dễ đề xuất cho nhiều đối tượng khác hàng khác nhau.",
+      "Có thể đề xuất khách hàng mua nhiều để tăng tổng lượng lợi nhuận.",
+    ],
+  },
+  {
+    Ten: "Bún ngũ sắc",
+    DienGiai: [
+      "Không phải là quá rẻ, 95k, rank 10/32 về mức rẻ",
+      "Tỉ lệ lợi nhuận ngang với granola là 16%",
+      "Số tiền lời thu về trên mỗi sản phẩm cũng không nổi bật. So với bún gạo lứt, thua một rank. ",
+      "Số lượng bán ra lại cao hơn so với bún gạo lứt một bậc, doanh thu cao hơn (13 so với 20), nhưng tổng lợi nhuận cũng lại thua 1 bậc so với bún gạo lứt",
+    ],
+    DuDoan: ["Mặt hàng staple, giá không cao, dễ bán."],
+    DanhGia: [
+      "Giữa bún ngũ sắc và bún gạo lứt để recommend cho khác hàng, recommend 1 bún ngũ sắc sẽ được nhiều tiền hơn so với 1 bún gạo lứt, dù cho đơn giá của bún ngũ sắc cao gần gấp đôi.",
+      "Đây là một mặt hàng bán chạy, lợi nhuận ổn, cố gắng duy trì performance.",
+    ],
+  },
+];
+
+// Select the container and append a table element
+var container = d3
+  .select("body")
+  .append("div")
+  .attr("class", "text-container")
+  .style("width", "1200px")
+  .style("padding", "10px");
+
+var table = container.append("table").attr("border", "1");
+
+// Append table header
+var thead = table.append("thead");
+var headerRow = thead.append("tr");
+headerRow.append("th").text("Tên");
+headerRow.append("th").text("Diễn giải");
+headerRow.append("th").text("Dự đoán nguyên do");
+headerRow.append("th").text("Đánh giá & Đề xuất");
+
+// Append table body and rows
+var tbody = table.append("tbody");
+
+// Function to join array elements into paragraphs
+function formatText(textArray) {
+  return textArray
+    .map(function (sentence) {
+      return `<p>${sentence}</p><br>`; // Wrap each sentence in a <p> tag for better separation
+    })
+    .join("");
+}
+
+data.forEach((d) => {
+  var row = tbody.append("tr");
+  row.append("td").text(d.Ten);
+  row.append("td").html(formatText(d.DienGiai));
+  row.append("td").html(formatText(d.DuDoan));
+  row.append("td").html(formatText(d.DanhGia));
+});
 
 d3.select("body").append("br");
 
