@@ -57,6 +57,7 @@ body, html {
     margin: var(--MARGIN-BODY) 0px var(--MARGIN-BODY) var(--MARGIN-BODY);
     background-color: #F6F4F2;
     color: var(--FONT-COLOR);
+    
 }
 
 svg text {
@@ -119,7 +120,23 @@ svg {
     box-shadow: 15px 15px 25px #eae1d493;
     margin-bottom: 55px;
     margin-right: 55px;
+    transform: translate(50%, 0)
 }
+
+.multiple {
+
+    transform: translate(0, 0)
+}
+
+#violinPlot1, 
+#group-boxplot, 
+#group-boxplot-points,
+.time-svg {
+    transform: translate(0, 0);
+}
+
+
+
 
 .subplot-title {
     font-size: 20px;

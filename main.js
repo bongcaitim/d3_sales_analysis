@@ -1012,6 +1012,7 @@ function createBarChart(
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .attr("class", "time-svg")
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -2228,7 +2229,6 @@ function createTable(data) {
 
   data.forEach((d) => {
     var row = tbody.append("tr");
-    // Ensure DienGiai, DuDoan, and DanhGia are always arrays
     var dienGiai = Array.isArray(d.DienGiai) ? d.DienGiai : [d.DienGiai];
     var duDoan = Array.isArray(d.DuDoan) ? d.DuDoan : [d.DuDoan];
     var danhGia = Array.isArray(d.DanhGia) ? d.DanhGia : [d.DanhGia];
@@ -2507,6 +2507,35 @@ d3.select("body")
   .append("br");
 
 createTreeMap();
+d3
+  .select("body")
+  .append("div")
+  .attr("class", "text-container")
+  .style("width", "1200px")
+  .style("padding", "10px").html(`
+    <p><strong>Nhóm "hibernating" (ngủ đông)</strong> là nhóm lớn nhất trong biểu đồ, cho thấy đây là nhóm khách hàng có số lượng đáng kể. Nhóm này bao gồm những khách hàng đã từng giao dịch với công ty nhưng đã không có hoạt động mua hàng trong một khoảng thời gian dài. Điều này có thể là do nhiều lý do khác nhau, chẳng hạn như mất đi nhu cầu sản phẩm/dịch vụ, chuyển sang sử dụng sản phẩm của đối thủ cạnh tranh hoặc đơn giản là quên mất doang nghiệp. Để tái kích hoạt nhóm khách hàng này, công ty có thể triển khai các chiến dịch tiếp thị nhắc nhở, cung cấp ưu đãi đặc biệt hoặc liên hệ trực tiếp để hiểu rõ hơn về nhu cầu và mong muốn của họ.</p>
+    <br>
+
+    <p><strong>Nhóm "potential loyalist" (tiềm năng trung thành)</strong> cũng là một nhóm lớn, bao gồm những khách hàng có triển vọng trở thành khách hàng trung thành nếu được chăm sóc và duy trì đúng cách. Đây là những khách hàng đã có một số giao dịch với công ty và có tiềm năng sẽ tiếp tục mua hàng trong tương lai. Để biến họ thành khách hàng trung thành, công ty có thể cung cấp chương trình khách hàng thân thiết, ưu đãi đặc biệt, dịch vụ chăm sóc khách hàng xuất sắc và tương tác thường xuyên để xây dựng mối quan hệ lâu dài.</p>
+    <br>
+
+    <p><strong>Nhóm "at risk" (có nguy cơ)</strong> cũng chiếm một phần lớn trong biểu đồ. Đây là những khách hàng có khả năng sẽ ngừng mua hàng hoặc chuyển sang sử dụng sản phẩm của đối thủ cạnh tranh. Để giữ chân họ, công ty cần nhanh chóng can thiệp bằng cách cung cấp ưu đãi hấp dẫn, cải thiện trải nghiệm khách hàng, giải quyết bất kỳ vấn đề hoặc khiếu nại nào từ phía khách hàng và tăng cường tương tác với họ.</p>
+    <br>
+
+    <p><strong>Nhóm "loyal customers" (khách hàng trung thành) và "champions" (người ủng hộ)</strong> có quy mô tương đối nhỏ trong biểu đồ. Tuy nhiên, đây là những nhóm khách hàng quan trọng nhất đối với công ty. Khách hàng trung thành thường đóng góp một phần lớn doanh thu và lợi nhuận cho doanh nghiệp, đồng thời cũng là những người tiếp thị và giới thiệu sản phẩm/dịch vụ của công ty với người khác. Công ty nên đầu tư vào việc duy trì mối quan hệ tốt với họ thông qua các chương trình khách hàng thân thiết, ưu đãi đặc biệt, sự quan tâm cá nhân và trải nghiệm khách hàng tuyệt vời.</p>
+    <br>
+
+    <p><strong>Các nhóm khách hàng khác như "about to sleep" (sắp ngủ), "needing attention" (cần quan tâm), "promising" (đầy hứa hẹn) và "can't lose them" (không thể mất họ)</strong> cũng đòi hỏi những chiến lược và hành động khác nhau từ phía công ty. Nhóm "about to sleep" bao gồm những khách hàng đã giảm hoạt động mua hàng gần đây và có nguy cơ trở thành nhóm "hibernating" nếu không được chăm sóc đúng cách. Công ty cần nhanh chóng can thiệp với các chiến dịch tiếp thị nhắc nhở và ưu đãi hấp dẫn để kích hoạt lại hoạt động mua hàng của họ.</p>
+    <br>
+
+    <p><strong>Nhóm "needing attention"</strong> cũng cần được chăm sóc đặc biệt để đảm bảo rằng họ không chuyển sang sử dụng sản phẩm của đối thủ cạnh tranh. Công ty có thể cải thiện trải nghiệm khách hàng, cung cấp dịch vụ chăm sóc khách hàng tốt hơn, giải quyết nhanh chóng bất kỳ vấn đề hoặc khiếu nại nào từ phía họ và cung cấp các ưu đãi hấp dẫn để giữ chân họ.</p>
+    <br>
+
+    <p><strong>Đối với nhóm "promising" (đầy hứa hẹn),</strong> đây là những khách hàng mới hoặc gần đây mới bắt đầu giao dịch với công ty. Để phát triển họ thành khách hàng trung thành, công ty cần đầu tư vào việc xây dựng mối quan hệ bền vững, cung cấp trải nghiệm khách hàng tuyệt vời và đáp ứng nhu cầu của họ một cách hiệu quả.</p>
+    <br>
+
+    <p>Cuối cùng, <strong>nhóm "can't lose them" (không thể mất họ)</strong> bao gồm những khách hàng quan trọng nhất, có giá trị cao nhất đối với doanh nghiệp. Công ty cần dành sự quan tâm đặc biệt cho nhóm này thông qua dịch vụ chăm sóc khách hàng cá nhân hóa, ưu đãi đặc biệt và tương tác thường xuyên để đảm bảo rằng họ cảm thấy được trân trọng và gắn bó với công ty.</p>
+    `);
 
 d3.select("body").append("br");
 d3.select("body")
