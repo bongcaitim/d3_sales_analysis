@@ -288,73 +288,68 @@ function createHeatMap() {
 }
 
 ////////////////////////////////////////////////////
-function createWordCloud(data) {
-  let rollupData = d3.rollup(
-    data,
-    (v) => d3.sum(v, (d) => d["Thành tiền"]),
-    (d) => d["Tên nhóm hàng"]
-  );
+function createWordCloud() {
+  var width = 800;
+  var height = 400;
 
-  let wordData = Array.from(rollupData, ([key, value]) => ({
-    text: key,
-    size: value / 4,
-  }));
+  // Create the SVG element and append it to the body
+  var svg = d3
+    .select("body")
+    .append("svg")
+    .attr("class", "wordcloud")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-  let width = 800;
-  let height = 400;
+  // Load the JSON data
+  d3.json("data/data.json").then((data) => {
+    let rollupData = d3.rollup(
+      data,
+      (v) => d3.sum(v, (d) => d["Thành tiền"]),
+      (d) => d["Tên nhóm hàng"]
+    );
 
-  let fontSizeScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(wordData, (d) => d.size)])
-    .range([10, 100]);
+    let wordData = Array.from(rollupData, ([key, value]) => ({
+      text: key,
+      size: value / 16,
+    }));
 
-  d3.layout
-    .cloud()
-    .size([width, height])
-    .words(wordData)
-    .padding(5)
-    .rotate(() => ~~(Math.random() * 2) * 90)
-    .fontSize((d) => fontSizeScale(d.size))
-    .on("end", draw)
-    .start();
+    var fontSizeScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(wordData, (d) => d.size)])
+      .range([10, 100]);
 
-  function draw(words) {
-    d3.select("body")
-      .append("svg")
-      .attr("class", "wordcloud")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-      .selectAll("text")
-      .data(words)
-      .enter()
-      .append("text")
-      .style("font-size", (d) => +d.size + "px")
-      .style("fill", () => d3.schemeDark2[Math.floor(Math.random() * 10)])
-      .attr("text-anchor", "middle")
-      .attr(
-        "transform",
-        (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"
-      )
-      .text((d) => d.text);
-  }
+    d3.layout
+      .cloud()
+      .size([width, height])
+      .words(wordData)
+      .padding(5)
+      .rotate(() => ~~(Math.random() * 2) * 90)
+      .fontSize((d) => fontSizeScale(d.size))
+      .on("end", draw)
+      .start();
+
+    // Function to draw the word cloud
+    function draw(words) {
+      svg
+        .selectAll("text")
+        .data(words)
+        .enter()
+        .append("text")
+        .style("font-size", (d) => +d.size + "px")
+        .style("fill", () => d3.schemeDark2[Math.floor(Math.random() * 10)])
+        .attr("text-anchor", "middle")
+        .attr(
+          "transform",
+          (d) => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"
+        )
+        .text((d) => d.text);
+    }
+  });
 }
-
 ////////////////////////////////////////////////////
 function barRevBySeg() {
-  const new_descriptions = {
-    A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
-    A2: "Người đi làm tại gia, nội trợ",
-    A3: "Mẹ bỉm sữa",
-    B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
-    B2: "Học sinh, sinh viên",
-    B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
-    C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
-    C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
-    C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
-  };
-
   const width = 900;
   const height = 700;
   const margin = { top: 90, right: 80, bottom: 40, left: 250 }; // Increased top margin for title
@@ -369,6 +364,18 @@ function barRevBySeg() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   d3.json("data/data.json").then(function (data) {
+    const new_descriptions = {
+      A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
+      A2: "Người đi làm tại gia, nội trợ",
+      A3: "Mẹ bỉm sữa",
+      B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
+      B2: "Học sinh, sinh viên",
+      B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
+      C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
+      C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
+      C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
+    };
+
     const nestedData = d3.rollup(
       data,
       (v) => d3.sum(v, (d) => d["Thành tiền"]),
@@ -479,142 +486,158 @@ function barRevBySeg() {
 ///////////////////////////////////////
 
 function changeDataPlot() {
-
-  // Define update globally or attach it to the window object
   function update(dataType) {
-      loadData(function (data) {
-          var sumData = d3.rollup(
-              data,
-              (v) => d3.sum(v, (d) => d["Thành tiền"]),
-              (d) => d[dataType === "data1" ? "Tên nhóm hàng" : "Tên mặt hàng"]
-          );
+    loadData(function (data) {
+      var sumData = d3.rollup(
+        data,
+        (v) => d3.sum(v, (d) => d["Thành tiền"]),
+        (d) => d[dataType === "data1" ? "Tên nhóm hàng" : "Tên mặt hàng"]
+      );
 
-          sumData = Array.from(sumData, ([key, value]) => ({ key, value }));
+      sumData = Array.from(sumData, ([key, value]) => ({ key, value }));
 
-          // Sort sumData by value in descending order
-          sumData.sort((a, b) => d3.descending(a.value, b.value));
+      // Sort sumData by value in descending order
+      sumData.sort((a, b) => d3.descending(a.value, b.value));
 
-          x.domain([0, d3.max(sumData, (d) => d.value)]);
-          y.domain(sumData.map((d) => d.key));
+      x.domain([0, d3.max(sumData, (d) => d.value)]);
+      y.domain(sumData.map((d) => d.key));
 
-          // Update x axis
-          secondSvg
-              .select(".x-axis")
-              .call(d3.axisBottom(x))
-              .selectAll("text") // Select all text elements of x-axis ticks
-              .remove(); // Remove them
+      // Update x axis
+      secondSvg
+        .select(".x-axis")
+        .call(d3.axisBottom(x))
+        .selectAll("text") // Select all text elements of x-axis ticks
+        .remove(); // Remove them
 
-          // Update y axis
-          secondSvg.select(".y-axis")
-              .transition()
-              .duration(1000)
-              .call(d3.axisLeft(y));
+      // Update y axis
+      secondSvg
+        .select(".y-axis")
+        .transition()
+        .duration(1000)
+        .call(d3.axisLeft(y));
 
-          // Append data labels to bars
-          secondSvg.selectAll(".data-label").remove();
-          var uLabels = secondSvg.selectAll(".data-label").data(sumData);
+      // Append data labels to bars
+      secondSvg.selectAll(".data-label").remove();
+      var uLabels = secondSvg.selectAll(".data-label").data(sumData);
 
-          uLabels.enter()
-              .append("text")
-              .attr("class", "data-label")
-              .merge(uLabels)
-              .transition()
-              .duration(1000)
-              .attr("x", function (d) {
-                  return x(d.value) + 10;
-              })
-              .attr("y", function (d) {
-                  return y(d.key) + y.bandwidth() / 2;
-              })
-              .text(function (d) {
-                  return (d.value / 1000000).toFixed(1) + "M";
-              });
+      uLabels
+        .enter()
+        .append("text")
+        .attr("class", "data-label")
+        .merge(uLabels)
+        .transition()
+        .duration(1000)
+        .attr("x", function (d) {
+          return x(d.value) + 10;
+        })
+        .attr("y", function (d) {
+          return y(d.key) + y.bandwidth() / 2;
+        })
+        .text(function (d) {
+          return (d.value / 1000000).toFixed(1) + "M";
+        });
 
-          secondSvg.selectAll(".domain").remove();
-          secondSvg.selectAll(".tick line").remove();
+      secondSvg.selectAll(".domain").remove();
+      secondSvg.selectAll(".tick line").remove();
 
-          secondSvg.selectAll("rect").remove();
+      secondSvg.selectAll("rect").remove();
 
-          var u = secondSvg.selectAll("rect").data(sumData);
+      var u = secondSvg.selectAll("rect").data(sumData);
 
-          u.enter()
-              .append("rect")
-              .merge(u)
-              .transition()
-              .duration(1000)
-              .attr("y", function (d) {
-                  return y(d.key);
-              })
-              .attr("height", y.bandwidth())
-              .attr("x", 0)
-              .attr("width", function (d) {
-                  return x(d.value);
-              })
-              .attr("fill", "#344955");
+      u.enter()
+        .append("rect")
+        .merge(u)
+        .transition()
+        .duration(1000)
+        .attr("y", function (d) {
+          return y(d.key);
+        })
+        .attr("height", y.bandwidth())
+        .attr("x", 0)
+        .attr("width", function (d) {
+          return x(d.value);
+        })
+        .attr("fill", "#344955");
 
-          secondSvg.selectAll(".chart-title").remove();
-          secondSvg.append("text")
-              .attr("class", "chart-title")
-              .attr("x", -secondMargin.left + 50)
-              .attr("y", -20)
-              .attr("text-anchor", "start")
-              .text("Doanh thu theo Nhóm hàng - Mặt hàng");
-      });
+      secondSvg.selectAll(".chart-title").remove();
+      secondSvg
+        .append("text")
+        .attr("class", "chart-title")
+        .attr("x", -secondMargin.left + 50)
+        .attr("y", -20)
+        .attr("text-anchor", "start")
+        .text("Doanh thu theo Nhóm hàng - Mặt hàng");
+    });
   }
 
   // Load data from JSON file
   function loadData(callback) {
-      d3.json("data/data.json").then(function (data) {
-          callback(data);
-      });
+    d3.json("data/data.json").then(function (data) {
+      callback(data);
+    });
   }
 
   // Initialize dimensions and margins
   var secondMargin = { top: 90, right: 80, bottom: 40, left: 250 },
-      secondWidth = 900,
-      secondHeight = 700;
+    secondWidth = 900,
+    secondHeight = 700;
 
   // Create SVG container
-  var secondSvg = d3.select("body")
-      .append("svg")
-      .attr("class", "rev-by-item")
-      .attr("width", secondWidth)
-      .attr("height", secondHeight)
-      .append("g")
-      .attr("transform", "translate(" + secondMargin.left + "," + secondMargin.top + ")");
+  var secondSvg = d3
+    .select("body")
+    .append("svg")
+    .attr("class", "rev-by-item")
+    .attr("width", secondWidth)
+    .attr("height", secondHeight)
+    .append("g")
+    .attr(
+      "transform",
+      "translate(" + secondMargin.left + "," + secondMargin.top + ")"
+    );
 
   // X axis scale
-  var x = d3.scaleLinear()
-      .range([0, secondWidth - secondMargin.left - secondMargin.right]);
+  var x = d3
+    .scaleLinear()
+    .range([0, secondWidth - secondMargin.left - secondMargin.right]);
 
   // Y axis scale
-  var y = d3.scaleBand()
-      .range([0, secondHeight - secondMargin.top - secondMargin.bottom])
-      .padding(0.1);
+  var y = d3
+    .scaleBand()
+    .range([0, secondHeight - secondMargin.top - secondMargin.bottom])
+    .padding(0.1);
 
   // X axis group
-  secondSvg.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", "translate(0," + (secondHeight - secondMargin.top - secondMargin.bottom) + ")");
+  secondSvg
+    .append("g")
+    .attr("class", "x-axis")
+    .attr(
+      "transform",
+      "translate(0," +
+        (secondHeight - secondMargin.top - secondMargin.bottom) +
+        ")"
+    );
 
   // Y axis group
-  secondSvg.append("g")
-      .attr("class", "y-axis");
+  secondSvg.append("g").attr("class", "y-axis");
 
   // Create buttons for data type selection
-  d3.select('body').append('br');
+  d3.select("body").append("br");
 
   d3.select("body")
-      .append("button")
-      .text("Nhóm hàng")
-      .on("click", function () { update('data1'); });
+    .append("button")
+    .text("Nhóm hàng")
+    .on("click", function () {
+      update("data1");
+    });
 
   d3.select("body")
-      .append("button")
-      .text("Mặt hàng")
-      .on("click", function () { update('data2'); });
+    .append("button")
+    .text("Mặt hàng")
+    .on("click", function () {
+      update("data2");
+    });
 
-  d3.select('body').append('br');
+  d3.select("body").append("br");
 
   // Initial update with default data type
   update("data1");
@@ -652,25 +675,25 @@ function createRevByMonthChart(container, dataFilePath) {
 
   var innerWidth = thirdWidth - thirdMargin.left - thirdMargin.right;
   var innerHeight = thirdHeight - thirdMargin.top - thirdMargin.bottom;
-
-  // Y axis
-  var y = d3.scaleLinear().range([innerHeight, 0]);
-
-  // X axis
-  var x = d3.scaleBand().range([0, innerWidth]).padding(0.1);
-
-  var xAxis = d3.axisBottom(x);
-  var yAxis = d3.axisLeft(y);
-
-  thirdSvg
-    .append("g")
-    .attr("class", "x-axis")
-    .attr("transform", "translate(0," + innerHeight + ")")
-    .call(xAxis);
-
-  thirdSvg.append("g").attr("class", "y-axis").call(yAxis);
-
   d3.json(dataFilePath).then(function (data) {
+    // Y axis
+    var y = d3.scaleLinear().range([innerHeight, 0]);
+
+    // X axis
+    var x = d3.scaleBand().range([0, innerWidth]).padding(0.1);
+
+    // Declare xAxis and yAxis once and configure it
+    var xAxis = d3.axisBottom(x);
+    var yAxis = d3.axisLeft(y).ticks(2); // configure yAxis with ticks
+
+    thirdSvg
+      .append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + innerHeight + ")")
+      .call(xAxis);
+
+    thirdSvg.append("g").attr("class", "y-axis").call(yAxis);
+
     var sumData = Array.from(
       d3.rollup(
         data,
@@ -682,8 +705,6 @@ function createRevByMonthChart(container, dataFilePath) {
 
     x.domain(sumData.map((d) => d.Month));
     y.domain([0, d3.max(sumData, (d) => d.sum)]);
-
-    const yAxis = d3.axisLeft(y).ticks(2);
 
     var line = d3
       .line()
@@ -908,6 +929,13 @@ function timeBarGrid() {
     .attr("class", "chart-title")
     .text("Số đơn trung bình theo thời gian");
   d3.select("body").append("br");
+
+  const gridContainer = d3
+    .select("body")
+    .append("div")
+    .attr("class", "grid-container")
+    .attr("id", "orders-by-time");
+
   const dataFiles = [
     {
       file: "data/DayofMonth_Summary.csv",
@@ -931,12 +959,6 @@ function timeBarGrid() {
       keyColumn: "HourofDay",
     },
   ];
-
-  const gridContainer = d3
-    .select("body")
-    .append("div")
-    .attr("class", "grid-container")
-    .attr("id", "orders-by-time");
 
   dataFiles.forEach((dataFile, index) => {
     createBarChart(
@@ -1358,45 +1380,44 @@ function boxPlotWithPoints(points, id) {
     C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
     C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
   };
+
+  var margin = { top: 90, right: 80, bottom: 40, left: 100 },
+    width = 800,
+    height = 700;
+  var innerHeight = height - margin.top - margin.bottom;
+  var innerWidth = width - margin.right - margin.left;
+
+  // d3.select("body").append("br").attr("class", `${id}`);
+
+  var tooltip = d3
+    .select("body")
+    .append("div")
+    .attr("class", `tooltip-${id}`)
+    .style("position", "absolute")
+    .style("visibility", "hidden")
+    .style("background", "#ffffe3")
+    .style("padding", "8px")
+    .style("border-radius", "4px");
+
+  var svg = d3
+    .select("body")
+    .append("svg")
+    .attr("id", id)
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg
+    .append("text")
+    .attr("x", -margin.left + 50)
+    .attr("y", -20)
+    .attr("text-anchor", "start")
+    .text("Phân bổ mức chi tiêu")
+    .attr("class", "chart-title");
   d3.csv("data/total_spent.csv").then(function (data) {
     data.map((d) => +d["Thành tiền"]);
 
     var data = Array.from(d3.group(data, (d) => d["Mã PKKH"]));
-
-    var margin = { top: 90, right: 80, bottom: 40, left: 100 },
-      width = 800,
-      height = 700;
-    var innerHeight = height - margin.top - margin.bottom;
-    var innerWidth = width - margin.right - margin.left;
-
-    // d3.select("body").append("br").attr("class", `${id}`);
-
-    var tooltip = d3
-      .select("body")
-      .append("div")
-      .attr("class", `tooltip-${id}`)
-      .style("position", "absolute")
-      .style("visibility", "hidden")
-      .style("background", "#ffffe3")
-      .style("padding", "8px")
-      .style("border-radius", "4px");
-
-    var svg = d3
-      .select("body")
-      .append("svg")
-      .attr("id", id)
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    svg
-      .append("text")
-      .attr("x", -margin.left + 50)
-      .attr("y", -20)
-      .attr("text-anchor", "start")
-      .text("Phân bổ mức chi tiêu")
-      .attr("class", "chart-title");
-
     xDomain = data.map((d) => d[0]);
 
     var x = d3.scaleBand().range([0, innerWidth]).domain(xDomain).padding(0.1);
@@ -1454,15 +1475,15 @@ function boxPlotWithPoints(points, id) {
             "visibility",
             "visible"
           ).html(`${key} - <strong>${new_descriptions[key]}</strong>
-                        <br>75% KH có mức chi tiêu dưới ${(q3 / 1e6).toFixed(
-                          1
-                        )} triệu
-                        <br>Trung vị mức chi tiêu: ${(median / 1e6).toFixed(
-                          1
-                        )} triệu
-                        <br>25% KH có mức chi tiêu dưới ${(q1 / 1e6).toFixed(
-                          1
-                        )} triệu`);
+                          <br>75% KH có mức chi tiêu dưới ${(q3 / 1e6).toFixed(
+                            1
+                          )} triệu
+                          <br>Trung vị mức chi tiêu: ${(median / 1e6).toFixed(
+                            1
+                          )} triệu
+                          <br>25% KH có mức chi tiêu dưới ${(q1 / 1e6).toFixed(
+                            1
+                          )} triệu`);
         })
         .on("mousemove", function (event) {
           tooltip
@@ -1508,15 +1529,15 @@ function boxPlotWithPoints(points, id) {
               "visibility",
               "visible"
             ).html(`${key} - <strong>${new_descriptions[key]}</strong>
-                        <br>75% KH có mức chi tiêu dưới ${(q3 / 1e6).toFixed(
-                          1
-                        )} triệu
-                        <br>Trung vị mức chi tiêu: ${(median / 1e6).toFixed(
-                          1
-                        )} triệu
-                        <br>25% KH có mức chi tiêu dưới ${(q1 / 1e6).toFixed(
-                          1
-                        )} triệu`);
+                          <br>75% KH có mức chi tiêu dưới ${(q3 / 1e6).toFixed(
+                            1
+                          )} triệu
+                          <br>Trung vị mức chi tiêu: ${(median / 1e6).toFixed(
+                            1
+                          )} triệu
+                          <br>25% KH có mức chi tiêu dưới ${(q1 / 1e6).toFixed(
+                            1
+                          )} triệu`);
           })
           .on("mousemove", function (event) {
             tooltip
@@ -1533,23 +1554,23 @@ function boxPlotWithPoints(points, id) {
 }
 /////////////////////////
 function violinChart(id) {
+  var margin = { top: 90, right: 80, bottom: 40, left: 100 },
+    width = 1655,
+    height = 400;
+  var innerHeight = height - margin.top - margin.bottom;
+  var innerWidth = width - margin.right - margin.left;
+
+  var svg = d3
+    .select("body")
+    .append("svg")
+    .attr("id", id)
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
   d3.csv("data/total_spent.csv").then(function (data) {
     data.forEach((d) => (d["Thành tiền"] = +d["Thành tiền"]));
-
-    var margin = { top: 90, right: 80, bottom: 40, left: 100 },
-      width = 1655,
-      height = 400;
-    var innerHeight = height - margin.top - margin.bottom;
-    var innerWidth = width - margin.right - margin.left;
-
-    var svg = d3
-      .select("body")
-      .append("svg")
-      .attr("id", id)
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     yDomain = d3.extent(data, (d) => d["Thành tiền"]);
     var y = d3.scaleLinear().domain(yDomain).range([innerHeight, 0]);
@@ -1758,18 +1779,6 @@ function stackedArea() {
 
 ////////////////////////////////////////////////////////////
 function createLollipopPlot() {
-  const new_descriptions = {
-    A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
-    A2: "Người đi làm tại gia, nội trợ",
-    A3: "Mẹ bỉm sữa",
-    B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
-    B2: "Học sinh, sinh viên",
-    B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
-    C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
-    C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
-    C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
-  };
-
   const width = 900;
   const height = 700;
   const margin = { top: 90, right: 80, bottom: 40, left: 250 };
@@ -1792,8 +1801,19 @@ function createLollipopPlot() {
     .style("background", "#ffffe3")
     .style("padding", "8px")
     .style("border-radius", "4px");
-
   d3.json("data/data.json").then(function (data) {
+    const new_descriptions = {
+      A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
+      A2: "Người đi làm tại gia, nội trợ",
+      A3: "Mẹ bỉm sữa",
+      B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
+      B2: "Học sinh, sinh viên",
+      B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
+      C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
+      C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
+      C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
+    };
+
     const nestedData = d3.rollup(
       data,
       (v) => d3.sum(v, (d) => d["Thành tiền"]),
@@ -1917,54 +1937,51 @@ function createLollipopPlot() {
 
 ////////////////////////////////////////////////////////////////
 function pieDonutChart(isDonut = false, chartId) {
-  const new_descriptions = {
-    A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
-    A2: "Người đi làm tại gia, nội trợ",
-    A3: "Mẹ bỉm sữa",
-    B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
-    B2: "Học sinh, sinh viên",
-    B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
-    C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
-    C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
-    C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
-  };
-
-  var margin = { top: 90, right: 80, bottom: 40, left: 100 },
-    width = 900,
-    height = 700;
-
-  var innerWidth = width - margin.left - margin.right;
-  var innerHeight = height - margin.top - margin.bottom;
-
-  var radius = 170;
-  const color = d3.scaleOrdinal(d3.schemeTableau10);
-
-  // Remove existing SVG to prevent overlap
-  d3.select(`#${chartId}`).select("svg").remove();
-
-  var chartSvg = d3
-    .select(`#${chartId}`)
-    .append("svg")
-    .attr("id", "chart")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr(
-      "transform",
-      "translate(" + (width / 2 - margin.right - 150) + "," + height / 2 + ")"
-    );
-
-  var tooltip = d3
-    .select("body")
-    .append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("visibility", "hidden")
-    .style("background", "#ffffe3")
-    .style("padding", "8px")
-    .style("border-radius", "4px");
-
   d3.json("data/data.json").then(function (data) {
+    const new_descriptions = {
+      A1: "Huấn luyện viên thể hình, giáo viên yoga, nghề liên quan đến vóc dáng",
+      A2: "Người đi làm tại gia, nội trợ",
+      A3: "Mẹ bỉm sữa",
+      B1: "Nhân viên văn phòng, công việc tự do (Chưa kết hôn)",
+      B2: "Học sinh, sinh viên",
+      B3: "Cán bộ, nhân viên, quản lý, công việc tự do (Đã kết hôn)",
+      C1: "CBCNV nhà nước, quản lý quan tâm sức khỏe tuổi trung niên",
+      C2: "CBCNV nhà nước, quản lý quan tâm sản phẩm cho bệnh lý",
+      C3: "Trưởng phòng, quản lý, cấp cao mua làm quà tặng, biếu gửi",
+    };
+
+    var margin = { top: 90, right: 80, bottom: 40, left: 100 },
+      width = 900,
+      height = 700;
+
+    var radius = 170;
+    const color = d3.scaleOrdinal(d3.schemeTableau10);
+
+    // Remove existing SVG to prevent overlap
+    d3.select(`#${chartId}`).select("svg").remove();
+
+    var chartSvg = d3
+      .select(`#${chartId}`)
+      .append("svg")
+      .attr("id", "chart")
+      .attr("width", width)
+      .attr("height", height)
+      .append("g")
+      .attr(
+        "transform",
+        "translate(" + (width / 2 - margin.right - 150) + "," + height / 2 + ")"
+      );
+
+    var tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("background", "#ffffe3")
+      .style("padding", "8px")
+      .style("border-radius", "4px");
+
     const nestedData = d3.rollup(
       data,
       (v) => d3.sum(v, (d) => d["Thành tiền"]),
@@ -2197,7 +2214,6 @@ function createTreeMap() {
     .attr("height", height)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
   d3.csv("data/rfm.csv").then((data) => {
     data.forEach((d) => {
       d.count_share = +d.count_share;
@@ -2302,6 +2318,7 @@ d3.select("body")
   .append("br");
 
 createRevByMonthChart("body", "data/data.json");
+
 d3
   .select("body")
   .append("div")
@@ -2323,7 +2340,15 @@ d3
       `);
 
 barRevBySeg();
+createLollipopPlot();
 
+d3.select("body").append("div").attr("id", "chartContainer1");
+pieDonutChart(true, "chartContainer1");
+
+d3.select("body").append("div").attr("id", "chartContainer2");
+pieDonutChart(false, "chartContainer2");
+
+stackedArea();
 d3
   .select("body")
   .append("div")
@@ -2378,15 +2403,93 @@ d3
           <p>Các dịp biếu nhiều: Tháng 1,2 - Tết, tháng 9 biếu giáo viên, tháng 10 có 20/10, tháng 11 có 20/11, tháng 12 quà cuối năm, giáng sinh.</p>
         `);
 
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text(
+    "Phân tích Hành vi mua lặp lại và Hành vi mua mới của từng phân khúc khách hàng"
+  )
+  .append("br");
+
+createSmallMultiplesChart(
+  (data = "data/monthly_churning_rate.csv"),
+  (id = "monthly-churn"),
+  (chartTitle = "Tỉ lệ rời bỏ hàng tháng"),
+  (valueColumn = "churning rate")
+);
+
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text("Phân tích Hành vi mua theo mức chi tiêu")
+  .append("br");
+
+plotHistogramWithKDE("data/total_spent.csv", "Thành tiền");
+d3.select("body").append("br");
+
+boxPlotWithPoints((points = false), (id = "group-boxplot-points"));
+boxPlotWithPoints((points = true), (id = "group-boxplot"));
+violinChart("violinPlot1");
+
+d3.select("body").append("br");
+
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text("Phân nhóm khách hàng theo phương pháp RFM")
+  .append("br");
+
+createTreeMap();
+
+d3.select("body").append("br");
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text("Phân tích Hành vi mua theo thời gian")
+  .append("br");
+
+timeBarGrid();
+
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-1")
+  .text("Phân tích các khía cạnh về Hàng Hóa")
+  .append("br");
+
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text(
+    "Phân tích chiến lược hàng hóa thông qua doanh thu - đơn giá - số lượng bán - lợi nhuận"
+  )
+  .append("br");
+
+createScatterPlot("Rank tiền lời", "Rank mức SL bán");
+createScatterPlot("Rank tổng lợi nhuận", "Rank mức SL bán");
+createScatterPlot("Rank mức rẻ", "Rank mức doanh thu");
+createParallelPlot("Rank TL lời", "Rank tổng lợi nhuận", "Rank mức doanh thu");
+
+d3.select("body").append("br");
+
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text("Hành vi mua theo Nhóm hàng")
+  .append("br");
+
 changeDataPlot();
 drillDownChart();
 
-d3.select("body")
+d3.select("body").append("br");
+
+createWordCloud();
+
+d3
+  .select("body")
   .append("div")
   .attr("class", "text-container")
   .style("width", "1200px")
-  .style("padding", "10px")
-  .html(`
+  .style("padding", "10px").html(`
       Granola là mặt hàng chủ đạo của cửa hàng, chiếm đến 14% doanh thu --> nên ưu tiên tập trung giữ và phát triển sản phẩm này. Đặc biệt, cần đào sâu vào phân tích lí do tại sao mặt hàng này lại nổi trong khách hàng để có thể phát triển những sản phẩm tương tự.
       
       <br>
@@ -2422,49 +2525,11 @@ d3.select("body")
     </ul>
   `);
 
-
-createParallelPlot("Rank TL lời", "Rank tổng lợi nhuận", "Rank mức doanh thu");
-// d3.select("body").append("br");
-
+d3.select("body").append("br");
+d3.select("body")
+  .append("text")
+  .attr("class", "heading-2")
+  .text("Hành vi mua theo Mặt hàng")
+  .append("br");
 createHeatMap();
-// d3.select("body").append("br");
-
-createSmallMultiplesChart(
-  (data = "data/monthly_churning_rate.csv"),
-  (id = "monthly-churn"),
-  (chartTitle = "Tỉ lệ rời bỏ hàng tháng"),
-  (valueColumn = "churning rate")
-);
-
-timeBarGrid();
-
-plotHistogramWithKDE("data/total_spent.csv", "Thành tiền");
-
-boxPlotWithPoints((points = false), (id = "group-boxplot-points"));
-boxPlotWithPoints((points = true), (id = "group-boxplot"));
-
-violinChart("violinPlot1");
-
-stackedArea();
-
-createLollipopPlot();
-
-// Create two containers for the charts
-d3.select("body").append("div").attr("id", "chartContainer1");
-d3.select("body").append("div").attr("id", "chartContainer2");
-
-// Create the two charts in separate containers
-pieDonutChart(true, "chartContainer1");
-pieDonutChart(false, "chartContainer2");
-
-createScatterPlot("Rank tiền lời", "Rank mức SL bán");
-createScatterPlot("Rank tổng lợi nhuận", "Rank mức SL bán");
-createScatterPlot("Rank mức rẻ", "Rank mức doanh thu");
-
-createTreeMap();
-
-d3.json("data/data.json").then((data) => {
-  d3.select("body").append("br");
-  createWordCloud(data);
-  d3.select("body").append("br");
-});
+d3.select("body").append("br");
