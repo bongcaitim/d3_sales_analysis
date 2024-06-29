@@ -41,14 +41,7 @@ html {
     --BORDERS: 2px solid var(--PALE-BROWN);
     --MARGIN-BODY: 35px;
 }
-  
 
-@media (prefers-color-scheme: light) {
-    body {
-        background-image: url('https://static.vecteezy.com/system/resources/previews/009/590/863/original/sparkle-star-gold-glitter-free-png.png'),
-        linear-gradient(#23072f,orange,#23072f,#493e6e);
-    }
-    }
 
 body, html {
     font-family: var(--FF);
